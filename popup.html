@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tab Manager</title>
+    <style>
+        body {
+            width: 300px;
+            font-family: Arial, sans-serif;
+        }
+        #tabs-list {
+            margin: 10px 0;
+        }
+        #search {
+            margin-bottom: 10px;
+        }
+        .tab-item {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h3>Tabs Manager</h3>
+    <input type="text" id="search" placeholder="Search tabs...">
+    <div id="tabs-list"></div>
+    <button id="save-tabs">Save All Tabs</button>
+    <button id="restore-tabs">Restore Tabs</button>
+</body>
+<script src="popup.js"></script>
+</html>
