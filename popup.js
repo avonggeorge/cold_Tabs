@@ -40,12 +40,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Load tabs into the list
     function loadTabsList(tabs) {
-        tabsList.innerHTML = '';
+        tabsList.innerHTML = '';  // Clear the existing list
         tabs.forEach(tab => {
             const tabItem = document.createElement('div');
             tabItem.className = 'tab-item';
             tabItem.textContent = tab.title;
-            tabsList.appendChild(tabItem);
+            
+            // Make tab title clickable
+            tabItem.addEventListener('click', function () {
+                chrome.tabs.create({ url: tab.url });  // Open the tab when clicked
+            });
+            
+            tabsList.appendChild(tabItem);  // Add the tab to the list
         });
     }
 
