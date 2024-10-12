@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('search');
     const tabsList = document.getElementById('tabs-list');
     const closedTabsList = document.getElementById('closed-tabs-list');  // Added closed tabs list
-    
+
     // Save all open tabs
     saveButton.addEventListener('click', function () {
         chrome.tabs.query({}, function (tabs) {
@@ -38,13 +38,24 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Load tabs into the list
+    // Load tabs into the list with favicons
     function loadTabsList(tabs) {
         tabsList.innerHTML = '';  // Clear the existing list
         tabs.forEach(tab => {
             const tabItem = document.createElement('div');
             tabItem.className = 'tab-item';
-            tabItem.textContent = tab.title;
+
+            // Create the favicon image
+            const favicon = document.createElement('img');
+            favicon.src = tab.favIconUrl || '';  // Use the favicon URL, fallback to an empty string if not available
+            favicon.className = 'tab-favicon';
+            favicon.onerror = function() {
+                favicon.src = 'default-favicon.png'; // Provide a fallback image if favicon fails to load
+            };
+
+            // Set the tab title
+            const tabTitle = document.createElement('span');
+            tabTitle.textContent = tab.title;
 
             // Make tab title clickable to restore tab
             tabItem.addEventListener('click', function () {
@@ -62,26 +73,44 @@ document.addEventListener('DOMContentLoaded', function () {
                 chrome.tabs.remove(tab.id);  // Close the tab
             });
 
-            tabItem.appendChild(closeButton);  // Append the close button to the tab item
+            // Append elements to the tab item
+            tabItem.appendChild(favicon);  // Append favicon
+            tabItem.appendChild(tabTitle);  // Append title
+            tabItem.appendChild(closeButton);  // Append the close button
             tabsList.appendChild(tabItem);  // Add the tab to the list
         });
     }
 
-    // Load recently closed tabs
+    // Load recently closed tabs with favicons
     function loadRecentlyClosedTabs() {
+        if (!closedTabsList) return;  // Safeguard if element is missing
         chrome.sessions.getRecentlyClosed(function (sessions) {
             closedTabsList.innerHTML = '';  // Clear the existing list
             sessions.forEach(session => {
                 if (session.tab) {
                     const tabItem = document.createElement('div');
                     tabItem.className = 'tab-item';
-                    tabItem.textContent = session.tab.title;
+
+                    // Create the favicon image
+                    const favicon = document.createElement('img');
+                    favicon.src = session.tab.favIconUrl || '';  // Use the favicon URL, fallback to an empty string if not available
+                    favicon.className = 'tab-favicon';
+                    favicon.onerror = function() {
+                        favicon.src = 'icons/icon16.png'; // Provide a fallback image if favicon fails to load
+                    };
+
+                    // Set the tab title
+                    const tabTitle = document.createElement('span');
+                    tabTitle.textContent = session.tab.title;
 
                     // Restore recently closed tab when clicked
                     tabItem.addEventListener('click', function () {
                         chrome.sessions.restore(session.tab.sessionId);  // Restore the closed tab
                     });
 
+                    // Append elements to the tab item
+                    tabItem.appendChild(favicon);  // Append favicon
+                    tabItem.appendChild(tabTitle);  // Append title
                     closedTabsList.appendChild(tabItem);  // Add the closed tab to the list
                 }
             });
