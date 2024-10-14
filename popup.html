@@ -40,12 +40,20 @@
 
     <!-- Recently closed tabs list -->
     <h2>Recently Closed Tabs</h2>
+
+    <h3>Scan to open this tab:</h3>
+    <div id="qrcode"></div>
+
     <div id="closed-tabs-list"></div>
 
     <div id="tabs-list"></div>
     <button id="save-tabs">Save All Tabs</button>
     <button id="restore-tabs">Restore Tabs</button>
+    <button id="email-tabs">Email Tabs</button>
+
 
 </body>
+<script src="qrcode.min.js"></script> <!-- Add QRCode.js -->
+
 <script src="popup.js"></script>
 </html>

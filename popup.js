@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const saveButton = document.getElementById('save-tabs');
+    const emailButton = document.getElementById('email-tabs');
     const restoreButton = document.getElementById('restore-tabs');
     const searchInput = document.getElementById('search');
     const tabsList = document.getElementById('tabs-list');
@@ -18,6 +19,53 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
+
+    // Send saved tabs via email
+    emailButton.addEventListener('click', function () {
+        chrome.storage.sync.get('savedTabs', function (data) {
+            const savedTabs = data.savedTabs || [];
+            const emailAddress = prompt('Enter the recipient email address:');
+            
+            if (emailAddress && savedTabs.length > 0) {
+                fetch('http://localhost:5000/send-email', {  // Your backend server URL
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: emailAddress,
+                        tabs: savedTabs
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        alert('Email sent successfully!');
+                    } else {
+                        alert('Failed to send email.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            } else {
+                alert('No tabs saved or invalid email address.');
+            }
+        });
+    });
+
+    // Get the current tab URL and generate a QR code
+    chrome.tabs.query({ active: true, lastFocusedWindow: true }, tabs => {
+        let currentTabUrl = tabs[0].url;  // The URL of the current tab
+
+        // Create the QR code
+        let qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: currentTabUrl,
+            width: 200,
+            height: 200
+        });
+    });
+
 
     // Restore all saved tabs
     restoreButton.addEventListener('click', function () {
